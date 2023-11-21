@@ -1,18 +1,17 @@
-function product() {
+window.onload=()=> {
     let url= 'http://localhost:3000/api/products';
     console.log(url);
     // Ici je réalise un fetch avec une promesse //
     fetch(url)
     .then (response => response.json())
-    .then ((product) => {
-        for (let data of product) {
+    .then ((products) => {
+        for (let product of products) {
             // Ici j'affiche les données de mes produits //
-            let display=``
-            display += `<a href="./product.html?id=${data._id}">
+            let display= `<a href="./product.html?id=${product._id}">
             <article>
-              <img src=${data.imageUrl} alt=${data.altTxt}>
-              <h3 class="productName">${data.name}</h3>
-              <p class="productDescription">${data.description}</p>
+              <img src=${product.imageUrl} alt=${product.altTxt}>
+              <h3 class="productName">${product.name}</h3>
+              <p class="productDescription">${product.description}</p>
             </article>
           </a>`
           document.getElementById('items').insertAdjacentHTML("beforeend",display)
@@ -20,4 +19,3 @@ function product() {
         }
     })
 }
-product(); 
