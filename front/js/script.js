@@ -18,4 +18,5 @@ window.onload=()=> {
           //Je demande qu'il cherche les éléments par les id des items puis qu'ils soient injectés dans le html en position "en avant" dans ma variable display // 
         }
     })
-}
+  }
+  
