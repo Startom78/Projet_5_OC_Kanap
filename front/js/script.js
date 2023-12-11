@@ -1,5 +1,5 @@
 window.onload=()=> {
-    let url= 'http://localhost:3000/api/products';
+    let url= `${API_URL}products`;
     console.log(url);
     // Ici je réalise un fetch avec une promesse //
     fetch(url)
