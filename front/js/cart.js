@@ -1,14 +1,17 @@
 // Je crée une fonction pour récupérer mon panier dans le local storage et afficher mon panier
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+const API_URL = "http://localhost:3000/api/products"
+console.log(API_URL)
 console.log(cart)
 function displayCart () {
     
     if (cart.length <= 0) {
 
-        window.alert("Votre panier est vide !")
+      window.alert("Votre panier est vide !")
     }
     
-          
+    fetch(API_URL)
+    .then(response => response.json())      
     let cartItemsElt= document.getElementById('cart_items')
     cart.forEach((product) => {
         
@@ -21,7 +24,7 @@ function displayCart () {
         productImgDiv.classList.add('cart__item__img')
 
         let productImg = document.createElement('img')
-        productImg.src = 'img.jpg'
+        productImg.src = ` ${product.imageUrl} `
         productImg.alt = "Photographie d'un canapé"
         productImgDiv.appendChild(productImg)
         productOfCartElt.appendChild(productImgDiv)
@@ -31,10 +34,16 @@ function displayCart () {
         
         let productDivInfo = document.createElement('div')
         productDivInfo.classList.add('cart__item__content__description')
-        productDivInfo.appendChild(productDiv)
-        productDiv.appendChild(productOfCartElt)
+
+        let productDivInfoH2 = document.createElement('h2')
+        productDivInfoH2.textContent = product.name
+        productDivInfo.appendChild(productDivInfoH2)
+         
+        productDiv.appendChild(productDivInfo)
+        productOfCartElt.appendChild(productDiv)
    
         console.log(productOfCartElt) 
+        console.log(product.imageUrl)
     }) 
     /* <!--  <article class="cart__item" data-id="{product-ID}" data-color="{product-color}"> 
             <div class="cart__item__img">
