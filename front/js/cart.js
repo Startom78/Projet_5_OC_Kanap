@@ -37,11 +37,31 @@ function displayCart() {
 }
 displayCart()
 
-function totalPrice () { // Je crée une fonction qui va calculer et afficher le prix total de mon panier
+  async function displayTotalAndPrice () { // Je crée une fonction qui va renvoyer le nombre total d'articles et calculer le prix total de mon panier
+  let totalQuantityOfProduct = 0
+  cart.forEach((product) => {
+    
+    totalQuantityOfProduct += +product.quantity
 
+  }) 
+  console.log(totalQuantityOfProduct)
   
 
+  let totalPrice = 0
+  for (const product of cart) {
+    let apiInfos = await getProducts(product.id)
+    
+      totalPrice += +product.quantity * apiInfos.price
+      console.log(totalPrice)
+    }
+  console.log(totalPrice)
+  let displayProduct = `${totalQuantityOfProduct}` 
+  let displayPrice = `${totalPrice}`
+  document.querySelector('#totalQuantity').insertAdjacentHTML('beforeend', displayProduct)
+  document.querySelector('#totalPrice').insertAdjacentHTML('beforeend', displayPrice)
+  
 }
+displayTotalAndPrice()
 
 function modifyQuantity() { // Je crée une fonction qui va me permettre d'ajouter ou d'enlever des éléments de mon panier
 
