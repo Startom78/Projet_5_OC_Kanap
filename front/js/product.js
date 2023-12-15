@@ -1,6 +1,6 @@
 // je récupère l'id de mon URL 
 
-async function runProduct() {
+function runProduct() {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const id = urlSearchParams.get("id"); 
     console.log(id)
@@ -11,7 +11,7 @@ async function runProduct() {
 // Je crée une fonction pour pouvoir afficher les éléments dont j'ai besoin sur ma page
 
 async function displayProduct (productId) {
-    const productCard = await getProducts(productId)
+    const productCard = await getProduct(productId)
     const parent = document.querySelector(".item__img")
     const img = document.createElement("img")
     img.src = productCard.imageUrl
@@ -82,5 +82,8 @@ function buttonClicked () {
         }
     })
 }
-runProduct()
-buttonClicked()
+
+window.onload = () => {
+    runProduct()
+    buttonClicked()
+}
