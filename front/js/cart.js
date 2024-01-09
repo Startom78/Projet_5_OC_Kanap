@@ -1,5 +1,4 @@
-// Je crée une fonction pour récupérer mon panier dans le local storage et afficher mon panier
-
+let globalCart = []
 function createArticle (product) {
   const productInfo = product.info
   const article = document.createElement('article')
@@ -28,18 +27,46 @@ function createArticle (product) {
     const inputQty = article.querySelector(".itemQuantity")
     inputQty.addEventListener("change", (event) => {
       console.log("change quantity for ", productInfo.name, event.target.value)
+      modifyQuantity(article, product, productInfo)
     })
-    const delArticle = article.querySelector(".deleteItem")
-    delArticle.addEventListener("click", () => {
-      console.log("delete me ", productInfo.name)
+    article.querySelector(".deleteItem").addEventListener("click", () => {
+    
+      delArticle(article, product, productInfo)
+      
     })
-  return article
+    return article
+  }
+
+  const modifyQuantity = (article, product, productInfo) => {
+    const lsCart = JSON.parse(localStorage.getItem('cart'))
+    const itemToModify = lsCart.find( p => (''+p.id === ''+productInfo._id && p.color === product.color))
+    const inputButton = article.querySelector('.itemQuantity')
+    const quantityToAdd = +inputButton.value
+    itemToModify.quantity = quantityToAdd
+    if (itemToModify.quantity > 100) {
+      window.alert('erreur : quantité max dépassé, limité à 100 par produit')
+      itemToModify.quantity = 100
+    }
+    localStorage.setItem('cart', JSON.stringify(lsCart))
+    const item = globalCart.find(item=>(''+item.id === ''+productInfo._id && item.color === product.color))
+    item.quantity = itemToModify.quantity
+    article.querySelector(".cart__item__content__settings__quantity p").textContent = `Qté : ${itemToModify.quantity}`
+    displayTotalAndPrice(globalCart)
+  }
+  
+  const delArticle = (article, product, productInfo) => { // je réalise une fonction qui crée un nouveau panier sans le produit qu'on enlève, puis je le renvoie en localstorage avant de le supprimer visuellement de la page
+    const lsCart = JSON.parse(localStorage.getItem('cart'))
+    const filteredCart = lsCart.filter( p => !(''+p.id === ''+productInfo._id && p.color === product.color) )
+    localStorage.setItem('cart', JSON.stringify(filteredCart))
+    globalCart = globalCart.filter(p => !(''+p.id === ''+productInfo._id && p.color === product.color))
+    article.parentNode.removeChild(article)
+    displayTotalAndPrice(globalCart)
 }
 
 
 function displayCart(cart) {
   cart.forEach((product) => {
-    const article = createArticle(product)
+    const article = createArticle(product, cart)
     document.querySelector('#cart__items').appendChild(article) // J'injecte mon code js dans le HTML et je le mets en avant
   })
 }
@@ -51,52 +78,15 @@ function displayTotalAndPrice (cart) { // Je crée une fonction qui va renvoyer 
 
   let totalPrice = 0
   for (const product of cart) {
-    totalPrice += +product.quantity * product.info.price // Je multiplie les produits à leur prix puis j'ajoute le résultat au prix total
+    totalPrice += +product.quantity * +product.info.price // Je multiplie les produits à leur prix puis j'ajoute le résultat au prix total
   }
   console.log(totalPrice)
   let displayProduct = `${totalQuantityOfProduct}` 
   let displayPrice = `${totalPrice}`
-  document.querySelector('#totalQuantity').insertAdjacentHTML('beforeend', displayProduct)
-  document.querySelector('#totalPrice').insertAdjacentHTML('beforeend', displayPrice)
+  document.getElementById('totalQuantity').textContent = displayProduct
+  document.getElementById('totalPrice').textContent = displayPrice
   
 }
-
-function modifyQuantity(cart) { // Je crée une fonction qui va me permettre d'ajouter ou d'enlever des éléments de mon panier
-  let ItemQuantity = document.getElementById('cart__items')
-  console.log(ItemQuantity)
-  /*for (let input of ItemQuantity) {
-    input.addEventListener('change', () => {
-      let closestItem = input.closest('.cart__item')
-      console.log(closestItem)
-      let closestId = closestItem.getAttribute('data-id')
-      let closestColor = closestItem.getAttribute('data-color')
-    })
-  } */
-
-
-
-
-
-
-
-
-}
-
-/*function deleteProduct () {
-  let delete = document.getElementsByClassName('deleteItem')
-  console.log('delete')
-  delete.addEventListener('click', () => {
-
-  })
-
-} */
-
-
-
-
-
-
-
 
 const initProducts = async(cart) => {
   console.log("call cart", cart)
@@ -107,84 +97,102 @@ const initProducts = async(cart) => {
   return cart.filter(p=>p.info)
 }
 
-
-/*let productOfCartElt = document.getElementById('cart__items')
-console.log(productOfCartElt)
-productOfCartElt.dataset.id = product.id
-productOfCartElt.dataset.color = product.color
-
-let productImgDiv = document.createElement('div')
-productImgDiv.classList.add('cart__item__img')
-
-let productImg = document.createElement('img')
-productImg.src = apiInfos.imageUrl
-productImg.alt = apiInfos.altTxt
-productImgDiv.appendChild(productImg)
-productOfCartElt.appendChild(productImgDiv)
-
-let productDiv = document.createElement('div')
-productDiv.classList.add('cart__item__content')
-
-let productDivInfo = document.createElement('div')
-productDivInfo.classList.add('cart__item__content__description')
-
-let productDivInfoH2 = document.createElement('h2')
-h2 = apiInfos.name
-console.log(h2)
-productDivInfo.appendChild(productDivInfoH2)
-productDiv.appendChild(productDivInfo)
-productOfCartElt.appendChild(productDiv)
-
-let productDivInfoColor = document.createElement('p')
-const color = product.color
-productDivInfo.appendChild(productDivInfoColor)
-console.log(color)
-
-let productDivInfoPrice = document.createElement('p')
-price = +apiInfos.price
-productDivInfo.appendChild(productDivInfoPrice)
-console.log(price) 
-
-//console.log(document.getElementsByClassName('cart__item'))
-//console.log(document.getElementsByClassName('cart__item').insertAdjacentHTML)
-//cartItemsElt.appendChild(product)
-//document.getElementsByClassName('cart__item').insertAdjacentHTML("beforeend", cart)
-
-})
-
-}
-/* <!--  <article class="cart__item" data-id="{product-ID}" data-color="{product-color}"> 
-    <div class="cart__item__img">
-      <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-    </div>
-    <div class="cart__item__content">     
-      <div class="cart__item__content__description">
-        <h2>Nom du produit</h2>
-        <p>Vert</p>
-        <p>42,00 €</p>
-      </div>
-      <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-          <p>Qté : </p>
-          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-        </div>
-        <div class="cart__item__content__settings__delete">
-          <p class="deleteItem">Supprimer</p>
-        </div>
-      </div>
-    </div> */
-
 window.onload = async() => {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   
   if (cart.length <= 0) {
     window.alert("Votre panier est vide !")
   }
-
+  
   console.log(cart)
   const filteredCart = await initProducts(cart)
+  globalCart = filteredCart
   console.log(filteredCart)
   displayCart(filteredCart)
-  displayTotalAndPrice(filteredCart)
-  modifyQuantity(filteredCart)
+  displayTotalAndPrice(cart)
+
+  const form = document.querySelector(".cart__order__form")
+  form.addEventListener("submit", (event) => {
+    const regexName = /^(?=.{1,50}$)[a-z]+(?:[-\s][a-z]+)*$/i
+    const regexCity = /^(?=.{1,50}$)[a-z]+(?:['-\s][a-z]+)*$/i
+    const regexAddress = /^[a-z0-9]+(?:['-\s][a-z0-9]+)*$/i
+    const regexMail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/i
+    let fail = true
+    const firstName = document.getElementById("firstName").value
+    const lastName = document.getElementById("lastName").value
+    const address = document.getElementById("address").value
+    const city = document.getElementById("city").value
+    const email = document.getElementById("email").value
+    const firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
+    const lastNameErrorMsg = document.getElementById("lastNameErrorMsg")
+    const addressErrorMsg = document.getElementById("addressErrorMsg")
+    const cityErrorMsg = document.getElementById("cityErrorMsg")
+    const emailErrorMsg = document.getElementById("emailErrorMsg")
+
+    firstNameErrorMsg.textContent = ""
+    lastNameErrorMsg.textContent = ""
+    addressErrorMsg.textContent = ""
+    cityErrorMsg.textContent = ""
+    emailErrorMsg.textContent = ""
+
+    console.log("firstName", firstName)
+    console.log("lastName", lastName)
+    console.log("address", address)
+    console.log("city", city)
+    console.log("email", email)
+
+    if (firstName.length>0 && lastName.length>0 && address.length>0 && city.length>0 && email.length>0) {
+      console.log("length ok")
+      if (!regexName.test(firstName)) {
+        firstNameErrorMsg.textContent = "Erreur : le prénom n'est pas valide"
+      } else if (!regexName.test(lastName)) {
+        lastNameErrorMsg.textContent = "Erreur : le nom de famille est invalide"
+      } else if (!regexCity.test(city)) {
+        cityErrorMsg.textContent = "Erreur : la ville est incorrecte"
+      } else if (!regexAddress.test(address)) {
+        addressErrorMsg.textContent = "Erreur : l'addresse est incorrecte"
+      } else if (!regexMail.test(email)) {
+        emailErrorMsg.textContent = "Erreur : l'email est incorrecte"
+      }
+      else {
+        fail = false
+      }
+    }
+    const order = {
+      contact : {
+        firstName, 
+        lastName,
+        address,
+        city,
+        email
+      },
+
+      products : globalCart.map(p => p.id)
+    }
+    if (fail) {
+      event.preventDefault()
+      console.log("validation failed")
+    } else {
+      event.preventDefault()
+      console.log("formulaire validé")
+      fetch('http://127.0.0.1:3000/api/products/order', {
+        method : "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      })
+     .then(res => {
+      if (!res.ok) {
+        throw ('erreur lors de la requete')
+      }
+      return res.json()
+    })
+    .then(data => {
+      console.log(data.orderId)
+      localStorage.removeItem('cart')
+      window.location.href = 'confirmation.html?id='+data.orderId
+     })
+     .catch(err => console.log('erreur', err))
+
+    }
+  })
 }

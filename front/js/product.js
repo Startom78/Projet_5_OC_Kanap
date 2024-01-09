@@ -39,6 +39,7 @@ function buttonClicked () {
     // Je crée un événement lorsque l'on clique sur le bouton "Ajouter au panier"
     button.addEventListener('click', () => {
         console.log("le bouton a bien été cliqué")
+        window.alert('le produit a été ajouté au panier')
         quantityOfProduct= quantity.value
         color = colors.value
         let cart= JSON.parse(storage.getItem('cart')) || []
@@ -67,10 +68,6 @@ function buttonClicked () {
                 quantityOfProduct = Math.min(Math.max(+quantityOfProduct, 1), 100)
                 cart.push({'quantity': +quantityOfProduct, 'id': ''+id, 'color': ''+color})
             } 
-            /*if (existingProduct.quantity > 100) {
-                throw new error('calme toi frérot')
-            }*/
-            
             storage.setItem('cart', JSON.stringify(cart))
             console.log("La quantité est correcte")
             console.log(cart)
