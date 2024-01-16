@@ -1,5 +1,5 @@
-let globalCart = []
-function createArticle (product) {
+let globalCart = [] // Je crée un panier vide ici
+function createArticle (product) { // Je crée une fonction qui affiche les produits du panier sur la page
   const productInfo = product.info
   const article = document.createElement('article')
   article.classList.add("cart__item")
@@ -25,8 +25,7 @@ function createArticle (product) {
       </div>
     </div>`
     const inputQty = article.querySelector(".itemQuantity")
-    inputQty.addEventListener("change", (event) => {
-      console.log("change quantity for ", productInfo.name, event.target.value)
+    inputQty.addEventListener("change", (event) => { // Je crée un event listener qui va supprimer l'article du LS et de la page lorsque l'on clique sur supprimer
       modifyQuantity(article, product, productInfo)
     })
     article.querySelector(".deleteItem").addEventListener("click", () => {
@@ -37,7 +36,7 @@ function createArticle (product) {
     return article
   }
 
-  const modifyQuantity = (article, product, productInfo) => {
+  const modifyQuantity = (article, product, productInfo) => { // Je crée une fonction pour modifier la quantité de mon article
     const lsCart = JSON.parse(localStorage.getItem('cart'))
     const itemToModify = lsCart.find( p => (''+p.id === ''+productInfo._id && p.color === product.color))
     const inputButton = article.querySelector('.itemQuantity')
@@ -80,7 +79,6 @@ function displayTotalAndPrice (cart) { // Je crée une fonction qui va renvoyer 
   for (const product of cart) {
     totalPrice += +product.quantity * +product.info.price // Je multiplie les produits à leur prix puis j'ajoute le résultat au prix total
   }
-  console.log(totalPrice)
   let displayProduct = `${totalQuantityOfProduct}` 
   let displayPrice = `${totalPrice}`
   document.getElementById('totalQuantity').textContent = displayProduct
@@ -88,31 +86,27 @@ function displayTotalAndPrice (cart) { // Je crée une fonction qui va renvoyer 
   
 }
 
-const initProducts = async(cart) => {
-  console.log("call cart", cart)
+const initProducts = async(cart) => { 
   for (let product of cart) {
     product.info = await getProduct(product.id)
-    console.log("call cart", product)
   }
-  return cart.filter(p=>p.info)
+  return cart.filter(p=>p.info) // Sert a filtrer les produits qui n'ont pas le champ "info"
 }
 
 window.onload = async() => {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = JSON.parse(localStorage.getItem('cart')) || []; // Je vais chercher mon panier dans le LS
   
   if (cart.length <= 0) {
     window.alert("Votre panier est vide !")
   }
   
-  console.log(cart)
   const filteredCart = await initProducts(cart)
   globalCart = filteredCart
-  console.log(filteredCart)
   displayCart(filteredCart)
   displayTotalAndPrice(cart)
 
   const form = document.querySelector(".cart__order__form")
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", (event) => { // Je mets des regex pour paramètres de validation de mon formulaire
     const regexName = /^(?=.{1,50}$)[a-z]+(?:[-\s][a-z]+)*$/i
     const regexCity = /^(?=.{1,50}$)[a-z]+(?:['-\s][a-z]+)*$/i
     const regexAddress = /^[a-z0-9]+(?:['-\s][a-z0-9]+)*$/i
@@ -135,14 +129,7 @@ window.onload = async() => {
     cityErrorMsg.textContent = ""
     emailErrorMsg.textContent = ""
 
-    console.log("firstName", firstName)
-    console.log("lastName", lastName)
-    console.log("address", address)
-    console.log("city", city)
-    console.log("email", email)
-
     if (firstName.length>0 && lastName.length>0 && address.length>0 && city.length>0 && email.length>0) {
-      console.log("length ok")
       if (!regexName.test(firstName)) {
         firstNameErrorMsg.textContent = "Erreur : le prénom n'est pas valide"
       } else if (!regexName.test(lastName)) {
@@ -168,14 +155,12 @@ window.onload = async() => {
       },
 
       products : globalCart.map(p => p.id)
-    }
+    } 
     if (fail) {
       event.preventDefault()
-      console.log("validation failed")
     } else {
       event.preventDefault()
-      console.log("formulaire validé")
-      fetch('http://127.0.0.1:3000/api/products/order', {
+      fetch('http://127.0.0.1:3000/api/products/order', { // Je crée un objet de commande via la commande "POST"
         method : "POST", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order),
@@ -187,7 +172,6 @@ window.onload = async() => {
       return res.json()
     })
     .then(data => {
-      console.log(data.orderId)
       localStorage.removeItem('cart')
       window.location.href = 'confirmation.html?id='+data.orderId
      })

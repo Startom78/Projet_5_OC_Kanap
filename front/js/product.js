@@ -38,14 +38,19 @@ function buttonClicked () {
     
     // Je crée un événement lorsque l'on clique sur le bouton "Ajouter au panier"
     button.addEventListener('click', () => {
-        console.log("le bouton a bien été cliqué")
-        window.alert('le produit a été ajouté au panier')
-        quantityOfProduct= quantity.value
-        color = colors.value
-        let cart= JSON.parse(storage.getItem('cart')) || []
-        console.log(cart) 
-         try { 
+        const quantityOfProduct = quantity.value
+        const color = colors.value
+        let cart= JSON.parse(storage.getItem('cart')) || [] 
+        try { 
             
+            if (quantityOfProduct<1) {
+                alert('il faut au moins un article') 
+                return 
+            }
+            if (quantityOfProduct>100) {
+                alert("Quantité max dépassé") 
+                return
+            }
             // si mon produit est déja dans mon panier j'additionne les quantités, sinon j'ajoute le nouveau canapé 
             let existingProduct= cart.find( product => ''+product.id === ''+id && product.color === color);
             if (existingProduct) {
@@ -63,14 +68,9 @@ function buttonClicked () {
             }
 
             else {
-                if (quantityOfProduct<1) return
-                if (quantityOfProduct>100) alert("Quantité max dépassé")
-                quantityOfProduct = Math.min(Math.max(+quantityOfProduct, 1), 100)
                 cart.push({'quantity': +quantityOfProduct, 'id': ''+id, 'color': ''+color})
             } 
             storage.setItem('cart', JSON.stringify(cart))
-            console.log("La quantité est correcte")
-            console.log(cart)
 
         }
         catch (error) {
