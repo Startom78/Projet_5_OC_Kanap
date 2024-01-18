@@ -3,7 +3,7 @@
 function runProduct() {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const id = urlSearchParams.get("id"); 
-    console.log(id)
+    
 
     displayProduct(id)
 }
@@ -48,7 +48,7 @@ function buttonClicked () {
                 return 
             }
             if (quantityOfProduct>100) {
-                alert("Quantité max dépassé") 
+                alert("Quantitée max dépassée") 
                 return
             }
             // si mon produit est déja dans mon panier j'additionne les quantités, sinon j'ajoute le nouveau canapé 
